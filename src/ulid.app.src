@@ -1,4 +1,4 @@
-{application, 'ulid',
+{application, ulid,
  [{description, "Library for generating ULID identifiers"},
   {vsn, "0.1.0"},
   {registered, []},
