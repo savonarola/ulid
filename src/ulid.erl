@@ -3,13 +3,14 @@
 -define(CHARS, <<"0123456789ABCDEFGHJKMNPQRSTVWXYZ">>).
 -define(CHAR_LENGTH, 32).
 -define(TIME_LENGTH, 10).
--define(MAX_TIME, 1125899906842624).
 -define(RANDOM_BYTES, 10).
 
 %% API exports
 -export([
   new/0,
+  generate/0,
   generate/1,
+  generate_list/0,
   generate_list/1
 ]).
 
@@ -20,18 +21,25 @@
 -type ulid_generator() :: {non_neg_integer(), list()}.
 
 -spec new() -> ulid_generator().
-
 new() ->
   {system_time(), encode_bytes(rand_bytes())}.
 
--spec generate(ulid_generator()) -> {ulid_generator(), binary()}.
+-spec generate() -> binary().
+generate() ->
+  {_, Ulid} = generate({0,[]}),
+  Ulid.
 
+-spec generate(ulid_generator()) -> {ulid_generator(), binary()}.
 generate(UlidGenerator) ->
   {NewUlidGenerator, Ulid} = generate_list(UlidGenerator),
   {NewUlidGenerator, erlang:list_to_binary(Ulid)}.
 
--spec generate_list(ulid_generator()) -> {ulid_generator(), list()}.
+-spec generate_list() -> list().
+generate_list() ->
+  {_, Ulid} = generate_list({0,[]}),
+  Ulid.
 
+-spec generate_list(ulid_generator()) -> {ulid_generator(), list()}.
 generate_list({OldSystemTime, OldEncodedBytes}) ->
   SystemTime = system_time(),
   NewEncodedBytes = case SystemTime of
@@ -51,7 +59,8 @@ system_time() ->
   erlang:system_time(milli_seconds).
 
 rand_bytes() ->
-  crypto:rand_bytes(?RANDOM_BYTES).
+  <<_:1, Rest/bitstring>> = crypto:strong_rand_bytes(?RANDOM_BYTES),
+  <<0:1, Rest/bitstring>>.
 
 encode_time(N) -> encode_time(N, ?TIME_LENGTH, []).
 
@@ -70,7 +79,7 @@ to_char(N) when (N >= 0) and (N =< 31) ->
   C.
 
 rotate(Bytes) ->
-  {Res, _} = lists:mapfoldl(fun(Byte, Rotated) ->
+  {Res, _} = lists:mapfoldr(fun(Byte, Rotated) ->
     case Rotated of
       true -> {Byte, Rotated};
       false -> case Byte + 1 of
