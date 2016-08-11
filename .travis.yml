@@ -1,0 +1,6 @@
+language: erlang
+otp_release:
+- 18.2
+- 19.0
+script:
+- make test
