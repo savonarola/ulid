@@ -28,18 +28,18 @@ ifneq ("$(wildcard erlang.plt)","")
 else
 		dialyzer --build_plt --output_plt erlang.plt --apps $(DIALYZER_APPS)
 endif
-ifneq ("$(wildcard doppler.plt)","")
-		@echo "doppler plt file already exists"
+ifneq ("$(wildcard ulid.plt)","")
+		@echo "ulid plt file already exists"
 else
-		dialyzer --build_plt --output_plt doppler.plt _build/default/lib/*/ebin
+		dialyzer --build_plt --output_plt ulid.plt _build/default/lib/*/ebin
 endif
 
 add_to_plt: build_plt
 		dialyzer --add_to_plt --plt erlang.plt --output_plt erlang.plt.new --apps $(DIALYZER_APPS)
-		dialyzer --add_to_plt --plt doppler.plt --output_plt doppler.plt.new _build/default/lib/*/ebin
+		dialyzer --add_to_plt --plt ulid.plt --output_plt ulid.plt.new _build/default/lib/*/ebin
 		mv erlang.plt.new erlang.plt
-		mv doppler.plt.new doppler.plt
+		mv ulid.plt.new ulid.plt
 
 dialyzer:
-		dialyzer --src src --plts erlang.plt doppler.plt -Wunmatched_returns -Werror_handling -Wrace_conditions -Wunderspecs
+		dialyzer --src src --plts erlang.plt ulid.plt -Wunmatched_returns -Werror_handling -Wrace_conditions -Wunderspecs
 

@@ -18,7 +18,7 @@
 %% API functions
 %%====================================================================
 
--type ulid_generator() :: {non_neg_integer(), list()}.
+-type ulid_generator() :: {non_neg_integer(), [byte()]}.
 
 -spec new() -> ulid_generator().
 new() ->
@@ -34,12 +34,12 @@ generate(UlidGenerator) ->
   {NewUlidGenerator, Ulid} = generate_list(UlidGenerator),
   {NewUlidGenerator, erlang:list_to_binary(Ulid)}.
 
--spec generate_list() -> list().
+-spec generate_list() -> [byte()].
 generate_list() ->
   {_, Ulid} = generate_list({0,[]}),
   Ulid.
 
--spec generate_list(ulid_generator()) -> {ulid_generator(), list()}.
+-spec generate_list(ulid_generator()) -> {ulid_generator(), [byte()]}.
 generate_list({OldSystemTime, OldEncodedBytes}) ->
   SystemTime = system_time(),
   NewEncodedBytes = case SystemTime of
