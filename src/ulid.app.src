@@ -9,8 +9,7 @@
    ]},
   {env,[]},
   {modules, [ulid]},
-
-  {contributors, ["Ilya Averyanov"]},
+  {maintainers, ["Ilya Averyanov"]},
   {licenses, ["MIT"]},
-  {links, ["https://github.com/alizain/ulid"]}
+  {links, ["https://github.com/savonarola/ulid"]}
  ]}.
