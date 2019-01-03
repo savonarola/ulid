@@ -2,5 +2,7 @@ language: erlang
 otp_release:
 - 18.2
 - 19.0
+- 20.3
+- 21.2
 script:
 - make test
