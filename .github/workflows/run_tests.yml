@@ -1,0 +1,26 @@
+name: Run tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: erlef/setup-beam@v1
+      with:
+        otp-version: 25.3
+    - name: check formatting
+      run: |
+        make fmt-check
+    - name: run common test
+      run: |
+        make ct
+    - name: run xref
+      run: |
+        make xref
+    - name: run dialyzer
+      run: |
+        make dialyzer

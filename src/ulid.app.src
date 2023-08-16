@@ -1,15 +1,15 @@
-{application, ulid,
- [{description, "Library for generating ULID identifiers"},
-  {vsn, "0.1.0"},
-  {registered, []},
-  {applications,
-   [kernel,
-    stdlib,
-    crypto
-   ]},
-  {env,[]},
-  {modules, [ulid]},
-  {maintainers, ["Ilya Averyanov"]},
-  {licenses, ["MIT"]},
-  {links, ["https://github.com/savonarola/ulid"]}
- ]}.
+{application, ulid, [
+    {description, "Library for generating ULID identifiers"},
+    {vsn, "git"},
+    {registered, []},
+    {applications, [
+        kernel,
+        stdlib,
+        crypto
+    ]},
+    {env, []},
+    {modules, [ulid]},
+    {maintainers, ["Ilya Averyanov"]},
+    {licenses, ["MIT"]},
+    {links, ["https://github.com/savonarola/ulid"]}
+]}.
