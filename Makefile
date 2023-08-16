@@ -1,45 +1,47 @@
-.PHONY: all compile run test clean
-.PHONY: build_plt dialyzer
+REBAR = $(CURDIR)/rebar3
 
-REBAR=./rebar3
+$(REBAR):
+	wget https://s3.amazonaws.com/rebar3/rebar3 && chmod +x rebar3
 
-DIALYZER_APPS = asn1 compiler crypto erts inets kernel public_key sasl ssl stdlib syntax_tools tools
-
+.PHONY: all
 all: $(REBAR) compile
 
+.PHONY: compile
 compile:
-		$(REBAR) compile
+	$(REBAR) compile
 
+.PHONY: run
 run:
-		erl -pa _build/default/lib/*/ebin -boot start_sasl
+	$(REBAR) shell
 
-test:
-		$(REBAR) ct skip_deps=true verbose=3
+.PHONY: ct
+ct: $(REBAR)
+	$(REBAR) ct --name 'test@127.0.0.1' --readable true -v -c
 
+.PHONY: cover
+cover: ct
+	$(REBAR) cover
+
+.PHONY: fmt
+fmt: $(REBAR)
+	$(REBAR) fmt
+
+.PHONY: fmt-check
+fmt-check: $(REBAR)
+	$(REBAR) fmt --check
+
+.PHONY: xref
+xref: $(REBAR)
+	$(REBAR) xref
+
+.PHONY: clean
 clean:
-		$(REBAR) clean
-		rm -rf ./test/*.beam
-		rm -rf ./erl_crash.dump
-		rm -rf TEST*.xml
+	@rm -rf _build
+	@rm -rf rebar3
+	@rm -rf *_crash.dump
+	@rm -rf ulid_*_plt
 
-build_plt: clean compile
-ifneq ("$(wildcard erlang.plt)","")
-		@echo "Erlang plt file already exists"
-else
-		dialyzer --build_plt --output_plt erlang.plt --apps $(DIALYZER_APPS)
-endif
-ifneq ("$(wildcard ulid.plt)","")
-		@echo "ulid plt file already exists"
-else
-		dialyzer --build_plt --output_plt ulid.plt _build/default/lib/*/ebin
-endif
-
-add_to_plt: build_plt
-		dialyzer --add_to_plt --plt erlang.plt --output_plt erlang.plt.new --apps $(DIALYZER_APPS)
-		dialyzer --add_to_plt --plt ulid.plt --output_plt ulid.plt.new _build/default/lib/*/ebin
-		mv erlang.plt.new erlang.plt
-		mv ulid.plt.new ulid.plt
-
-dialyzer:
-		dialyzer --src src --plts erlang.plt ulid.plt -Wunmatched_returns -Werror_handling -Wrace_conditions -Wunderspecs
+.PHONY: dialyzer
+dialyzer: $(REBAR)
+		$(REBAR) dialyzer
 
